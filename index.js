@@ -12,6 +12,7 @@ var audioContext //audio context to help us record
 var recordButton = document.getElementById("record-btn");
 var stopButton = document.getElementById("stop-btn");
 var pauseButton = document.getElementById("pause-btn");
+var recordingsList = document.getElementById("recordings-list")
 
 //add events to those 2 buttons
 recordButton.addEventListener("click", startRecording);
