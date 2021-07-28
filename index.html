@@ -12,7 +12,7 @@
 </head>
 <body>
     <header id="header">
-        <h1>SOUND</h1>
+        <h1><span><i class="fas fa-bell"></i></span>SOUND<span><i class="fas fa-bell"></i></span></h1>
         <h3>Smart Open-source Utility Networking Doorbell</h3>
         <h2>Innovating the Future of Home Security</h2>
         <h3>Mission: We aim to design a home security system that is privately owned and operated by the user. 
@@ -32,10 +32,15 @@
         <div>
             <p id="time">Time: <span>2021-07-28 04:03:20.433019</span></p>
         </div>
-        <div>
-            <button class="btn"><i class="fas fa-microphone"></i></button>
-            <h3>Record Audio</h3>
+        <div id="controls">
+            <button id="record-btn"><i class="fas fa-microphone"></i></button>
+            <button id="pause-btn"><i class="fas fa-pause"></i></button>
+            <button id="stop-btn"><i class="fas fa-stop"></i></button>
+            <h2>Record Audio</h3>
         </div>
+        <ol id="recordings-list">
+
+        </ol>
     </main>
 
     <footer id="footer">
@@ -48,5 +53,7 @@
     <!-- Add JavaScript plugins for Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+    <!-- Add Recorder.js -->
+    <script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
 </body>
 </html>
