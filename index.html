@@ -11,43 +11,50 @@
     <link rel="stylesheet" href="index.css">
 </head>
 <body>
-    <header id="header">
-        <h1><span><i class="fas fa-bell"></i></span>SOUND<span><i class="fas fa-bell"></i></span></h1>
-        <h3>Smart Open-source Utility Networking Doorbell</h3>
-        <h2>Innovating the Future of Home Security</h2>
-        <h3>Mission: We aim to design a home security system that is privately owned and operated by the user. 
+    <header id="header" class="text-center">
+        <h1 class="display-2"><span><i class="fas fa-bell"></i> </span>SOUND<span> <i class="fas fa-bell"></i></span></h1>
+        <h2 class="h3 text-muted">Smart Open-source Utility Networking Doorbell</h3>
+        <h3 class="h3">
+          <em>Innovating the Future of Home Security</em>
+        </h3>
+        <p class="lead shadow p-3 mb-5 bg-body rounded">We aim to design a home security system that is privately owned and operated by the user. 
             It consists of the doorbell interface, which includes the classic buzzer, a microphone, speaker, 
             and motion detection, as well as the residential interface, which consists of a webpage that the 
             resident can access to view images of the person at their doorstep as well as speak to and hear them. 
             Furthermore, we will design it to be open source in order for residents to comfortably use the 
-            technology and feel as if they aren’t sacrificing their privacy. </h3>
+            technology and feel as if they aren’t sacrificing their privacy. </p>
     </header>
 
-    <main id="main">
-        <div>
-            <h2>Front-door Camera</h2>
-            <iframe width="500" height="500" src="" frameborder="0" allowfullscreen></iframe>
-            </iframe>
+    <main class="container text-center" id="primary">
+      <div class="row">
+        <div class="col">
+          <h2 class="h2">Front Door</h2>
+          <img class="image-fluid img-thumbnail" src="placeholder.jpg" alt="">
         </div>
-        <div>
-            <p id="time">Time: <span>2021-07-28 04:03:20.433019</span></p>
+        <div class="col">
+          <p id="time">Time: <span>2021-07-28 04:03:20.433019</span></p>
+          <textarea name="" id="" cols="30" rows="10" placeholder="Some text here"></textarea>
         </div>
-        <div id="controls">
-            <button id="record-btn"><i class="fas fa-microphone"></i></button>
-            <button id="pause-btn"><i class="fas fa-pause"></i></button>
-            <button id="stop-btn"><i class="fas fa-stop"></i></button>
-            <h2>Record Audio</h3>
-        </div>
-        <div id="formats">Format: start recording to see sample rate</div>
-  	    <p><strong>Recordings:</strong></p>
-        <ol id="recordings-list">
-
-        </ol>
+      </div>
     </main>
 
-    <footer id="footer">
+    <main class="container text-center" id="secondary">
+        <div class="btn-group rounded-circle" id="controls">
+            <button class="btn-lg rounded-circle" id="record-btn"><i class="fas fa-microphone"></i></button>
+            <button class="btn-lg rounded-circle" id="pause-btn"><i class="fas fa-pause"></i></button>
+            <button class="btn-lg rounded-circle" id="stop-btn"><i class="fas fa-stop"></i></button>
+        </div>
+        <h2 class="h2">Record Audio</h3>
+        <div id="formats">Format: start recording to see sample rate</div>
+  	    <p><strong>Recordings:</strong></p>
+        <ol id="recordings-list"></ol>
+    </main>
+
+
+    <footer class="text-center" id="footer">
         <p>&copy; 2021 SOUND Inc.</p>
     </footer>
+    
     <!-- Add JS -->
     <script src="index.js"></script>
     <!-- Add Font Awesome -->
