@@ -1,0 +1,20 @@
+{
+  "name": "mostec-embedded-systems-sound",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mannendri/MOSTEC-Embedded-Systems-SOUND.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Mannendri/MOSTEC-Embedded-Systems-SOUND/issues"
+  },
+  "homepage": "https://github.com/Mannendri/MOSTEC-Embedded-Systems-SOUND#readme",
+  "dependencies": {}
+}
