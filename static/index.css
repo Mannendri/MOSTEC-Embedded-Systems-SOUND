@@ -48,11 +48,11 @@ body{
   margin: 2em 4em
 }
 
-#primary{
+#dashboard{
   background-color: var(--bg-secondary);
 }
 
-#primary h2{
+#dashboard h2{
   background-color: var(--bg-tertiary);
   padding: 0.25em;
 }
@@ -61,12 +61,6 @@ iframe{
   width:320px;
   height: 240px;
   justify-self: center;
-}
-
-.btn-lg{
-  border:none;
-  margin: 0em .25em;
-  background-color: var(--color-primary);
 }
 
 #footer{

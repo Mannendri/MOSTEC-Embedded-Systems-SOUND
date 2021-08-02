@@ -206,44 +206,49 @@ def take_a_picture():
     '''
     time.sleep(1)
 
+word_bank = ["","","","","","","","","","","","",]
 state = 0
+count = 0
 #---MAIN---
 while True:
     motion_detector = pir.value
     if state == 0:
       if motion_detector == 1:
           state = 1
-      elif motion_detector == 0:
-          pass
 
     elif state == 1:
+        buzzer.duty_cycle = ON
+        time.sleep(2)
         buzzer.duty_cycle = OFF
         state = 1.5
 
     elif state == 1.5:
         if motion_detector == 1:
           #Twilio sending text
-          twiliotext = "Someone is at your front door! Click the link to see who it is: http://608dev.net/sandbox/mostec_camera/sound?id=1"
+          twiliotext = "Someone is at your front door! Click the link to see who it is: https://mostec-embedded-systems-sound.pythode.repl.co/"
           headers = {"Authorization": "Basic QUM2ZDBlZThhMDY1M2U5MGI5ZDBkMDk5N2UyMzEzYzJiMTo3YTg3M2JkMTQ2MWE0MjM3YmI4OTZjZjUzNjY1MDc3Zg=="}
           body = {"Body": twiliotext,"To":"+19172255342", "From":"+13236724972"}
           r = requests.post("https://api.twilio.com/2010-04-01/Accounts/AC6d0ee8a0653e90b9d0d0997e2313c2b1/Messages.json", data=body, headers=headers)
           state = 2
         elif motion_detector == 0:
-          count = count + 1
+          count += 1
           time.sleep(0.1)
-          if count = 300:
+          if count == 300:
+              count = 0
               state = 0
-        else:
-          pass
 
     elif state == 2:
-        pass
+        take_a_picture()
+        if toggle_btn.value == 0:
+          state = 3
 
     elif state == 3:
-        pass
+        if toggle_btn.value == 1:
+          state = 4
 
     elif state == 4:
-        pass
+        print("Hello") # Should print next word in word_bank
+        state = 2
 
     elif state == 5:
         pass
