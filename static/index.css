@@ -17,6 +17,19 @@ body{
   color: var(--color-primary);
 }
 
+#logo{
+  margin: 1em 0;
+  width: 30vw;
+  border: 5px solid var(--color-primary);
+  border-radius: 20px;
+}
+
+#header{
+  background-color: var(--bg-tertiary);
+  padding-bottom: 1em;
+  margin-bottom: 1em;
+}
+
 #header h1{
   color: var(--color-primary);
   margin-top: 0.5em;
@@ -42,6 +55,12 @@ body{
 #primary h2{
   background-color: var(--bg-tertiary);
   padding: 0.25em;
+}
+
+iframe{
+  width:320px;
+  height: 240px;
+  justify-self: center;
 }
 
 .btn-lg{

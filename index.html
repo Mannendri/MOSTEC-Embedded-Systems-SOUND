@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>S.O.U.N.D.</title>
-    <!-- <link rel="icon" href="bell-regular.svg"> -->
+    <link rel="icon" href="images/sound-icon.png">
     <!-- Add Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <!-- Add CSS -->
@@ -13,7 +13,7 @@
 </head>
 <body>
     <header id="header" class="text-center">
-        <h1 class="display-3"><span><i class="fas fa-bell me-3"></i></span>SOUND<span><i class="fas fa-bell ms-3"></i></span></h1>
+        <img id="logo" src="images/sound-logo.png" alt="">
         <h2 class="h3">Smart Open-source Utility Networking Doorbell</h3>
         <h3 class="h3">
           <em>Innovating the Future of Home Security</em>
@@ -27,10 +27,11 @@
     </header>
 
     <main class="container shadow-lg p-3 mb-5 rounded" id="primary">
+      <h1 class="text-center">Dashboard</h1>
       <div class="row">
         <div class="col">
           <h2 class="h2">Front Door</h2>
-          <img class="image-fluid img-thumbnail" src="http://608dev.net/sandbox/mostec_camera/sound?id=1" alt="">
+          <iframe src="https://608dev.net/sandbox/mostec_camera/sound?id=1" title="Image"></iframe>
         </div>
         <div class="col">
           <h2 id="time">Time: <span>2021-07-28 04:03:20.433019</span></h2>
