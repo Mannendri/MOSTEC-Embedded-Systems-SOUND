@@ -1,14 +1,9 @@
+#---IMPORTS---
+import time
 import board
 import busio
 import displayio
 import digitalio
-import time
-from analogio import AnalogIn
-import neopixel
-from math import log
-from analogio import AnalogOut
-import audioio
-import audiocore
 import pulseio
 import gc
 import circuitpython_base64 as base64
@@ -17,23 +12,22 @@ from adafruit_esp32spi import adafruit_esp32spi
 import adafruit_requests as requests
 from configuration import *
 
-button = digitalio.DigitalInOut(board.D12)
-button.switch_to_input(pull=digitalio.Pull.UP)
-speaker = audioio.AudioOut(board.A1)
-mic = AnalogIn(board.A0)
-buzzer = pulseio.PWMOut(board.D0, variable_frequency=True)
-pir = digitalio.DigitalInOut(board.D11)
+#---CONFIGURATION---
+#Buttons
+toggle_btn = digitalio.DigitalInOut(board.D0)
+toggle_btn.switch_to_input(pull=digitalio.Pull.UP)
+stage_btn = digitalio.DigitalInOut(board.D1)
+stage_btn.switch_to_input(pull=digitalio.Pull.UP)
+send_btn = digitalio.DigitalInOut(board.D2)
+send_btn.switch_to_input(pull=digitalio.Pull.UP)
+#PIR Sensor
+pir = digitalio.DigitalInOut(board.D3)
 pir.direction = digitalio.Direction.INPUT
-
+#Piezo Buzzer
+buzzer = pulseio.PWMOut(board.D4, variable_frequency=True)
 OFF = 0
 ON = 2**15
-state = 0
-timer = time.monotonic()
-count = 0
-recordingVisitor = list(range(12000)) #list used to store audio
-i=0  #variable used for indexing through sound (on recording and playback)
-
-#Camera setup
+#Camera
 I2C_ADDR = 0x30
 i2c = board.I2C()
 cs = digitalio.DigitalInOut(board.D7)
@@ -174,7 +168,6 @@ def take_a_picture():
             ending = i
             newstr = base64.encodebytes(data[0:count])[:-1]
             count = 0
-            #print(len(newstr),newstr)
             encoded+=newstr
             print("done!")
             print("Buffer Captured: {}".format(i))
@@ -194,7 +187,6 @@ def take_a_picture():
             break
         if count>=36:
             newstr = base64.encodebytes(data[0:count])[:-1]
-            #print(len(newstr),newstr)
             encoded+=newstr
             count=0
         od = nd
@@ -211,75 +203,29 @@ def take_a_picture():
             if failure_count >= attempts:
                 raise AssertionError("Failed to resolve hostname, \please check your router's DNS configuration")
     '''
+    time.sleep(1)
 
+state = 0
+#---MAIN---
 while True:
-    motionDetector = pir.value 
     if state == 0:
-        speaker.stop()
-        buzzer.duty_cycle = OFF
-    #motionDetector == 1 is motion detected, 0 is no motion detected
-        if motionDetector == 1:
-            state = 1
-        elif motionDetector == 0:
-            pass
-    if state == 1:
-        buzzer.frequency = 262
-        buzzer.duty_cycle = ON
-       
-        state = 1.5
-    if state == 1.5:
-        if motionDetector == 1:
-          #twilio sending text
-            twiliotext = "Someone is at your front door! Click the link to see who it is: https://mostec-embedded-systems-sound.pythode.repl.co/"
-            headers = {"Authorization": "Basic QUM2ZDBlZThhMDY1M2U5MGI5ZDBkMDk5N2UyMzEzYzJiMTo3YTg3M2JkMTQ2MWE0MjM3YmI4OTZjZjUzNjY1MDc3Zg=="}
-            body = {"Body": twiliotext,"To":"+19172255342", "From":"+13236724972"}
-            r = requests.post("https://api.twilio.com/2010-04-01/Accounts/AC6d0ee8a0653e90b9d0d0997e2313c2b1/Messages.json", data=body, headers=headers)
-            state = 2
-            
-        elif motionDetector == 0:
-            buzzer.duty_cycle = OFF
-            count = count + 1
-            time.sleep(0.1)
-            if count == 300:
-                state = 0
-        else:
-            pass
-    if state == 2:
-#         recordingResident = requests.get(wherever audio is stored in website)
-        take_a_picture()
-        recordingResident = ''
-        if button.value == 0:
-            state = 3
-            # requests.get(wherever audio is stored in website)
-            # |
-            # v
-        elif recordingResident != recordingResident:
-            state = 5
-        state = 0
-    if state == 3:
-        #need to ask joe how to sample audio so it doesnt sound terrible
-        while i < len(recordingVisitor):
-            val = mic.value
-            recording[i] = val
-            i = i + 1
-        i = 0
-        if s1.value == 1:
-            state = 4
-    if state == 4:
-#         requests.post(put recording on website, automatically plays on resident interface)
-        state = 1.5
-    if state == 5:
-        filename = 'laugh.wav'
-        print("")
-        print("----------------------------------")
-        print("playing file "+filename)
-        with open(filename, "rb") as wave_file:
-            wave = audiocore.WaveFile(wave_file)
-            speaker.play(wave)
-            while speaker.playing:
-                pass
-        print("finished")
-        print("----------------------------------")
-        state = 1.5
-    
+        pass
+    elif state == 1:
+        pass
+    elif state == 1.5:
+        pass
+    elif state == 2:
+        pass
+    elif state == 3:
+        pass
+    elif state == 4:
+        pass
+    elif state == 5:
+        pass
+    elif state == 6:
+        pass
+    elif state == 7:
+        pass
+    elif state == 8:
+        pass
     time.sleep(0.5)
