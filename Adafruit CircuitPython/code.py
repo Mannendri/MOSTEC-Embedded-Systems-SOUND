@@ -1,34 +1,50 @@
-#---IMPORTS---
+# ---IMPORTS---
 import time
 import board
 import busio
 import displayio
+import terminalio
 import digitalio
 import pulseio
 import gc
 import circuitpython_base64 as base64
+from adafruit_display_text import label
+import adafruit_displayio_ssd1306
 import adafruit_esp32spi.adafruit_esp32spi_socket as socket
 from adafruit_esp32spi import adafruit_esp32spi
 import adafruit_requests as requests
 from configuration import *
+from secrets import secrets
 
-#---CONFIGURATION---
-#Buttons
+# ---CONFIGURATION---
+# Buttons
 toggle_btn = digitalio.DigitalInOut(board.D0)
 toggle_btn.switch_to_input(pull=digitalio.Pull.UP)
 stage_btn = digitalio.DigitalInOut(board.D1)
 stage_btn.switch_to_input(pull=digitalio.Pull.UP)
 send_btn = digitalio.DigitalInOut(board.D2)
 send_btn.switch_to_input(pull=digitalio.Pull.UP)
-#PIR Sensor
+# PIR Sensor
 pir = digitalio.DigitalInOut(board.D3)
 pir.direction = digitalio.Direction.INPUT
-#Piezo Buzzer
+# Piezo Buzzer
 buzzer = pulseio.PWMOut(board.D4, variable_frequency=True)
 buzzer.frequency = 262
 OFF = 0
 ON = 2**15
-#Camera
+# OLED Display
+displayio.release_displays()
+i2c = board.I2C()
+display_bus = displayio.I2CDisplay(i2c, device_address=0x3c)
+display = adafruit_displayio_ssd1306.SSD1306(display_bus, width=128, height=64)
+splash = displayio.Group()
+text_area = label.Label(terminalio.FONT, text=" ", color=0xFFFF00, x=10, y=10)
+stage = label.Label(terminalio.FONT, text=" ", color=0xFFFF00, x=10, y=32)
+splash.append(text_area)
+display.show(splash)
+# time
+timer = time.monotonic()
+# Camera
 I2C_ADDR = 0x30
 i2c = board.I2C()
 cs = digitalio.DigitalInOut(board.D7)
@@ -37,16 +53,15 @@ cs.value = True
 spi = busio.SPI(board.SCK, MISO=board.MISO, MOSI=board.MOSI)
 while not spi.try_lock():
     pass
-#spi.configure(baudrate=4000000, phase=0, polarity=0)
+# spi.configure(baudrate=4000000, phase=0, polarity=0)
 spi.unlock()
 # If you are using a board with pre-defined ESP32 Pins:
 esp32_cs = digitalio.DigitalInOut(board.ESP_CS)
 esp32_ready = digitalio.DigitalInOut(board.ESP_BUSY)
 esp32_reset = digitalio.DigitalInOut(board.ESP_RESET)
-#spi = busio.SPI(board.SCK, board.MOSI, board.MISO)
+# spi = busio.SPI(board.SCK, board.MOSI, board.MISO)
 esp = adafruit_esp32spi.ESP_SPIcontrol(spi, esp32_cs, esp32_ready, esp32_reset)
 requests.set_socket(socket, esp)
-from secrets import secrets
 if esp.status == adafruit_esp32spi.WL_IDLE_STATUS:
     print("ESP32 found and in idle mode")
 print("Connecting to AP...")
@@ -103,7 +118,7 @@ def camera_data_read(address,num_bytes = 1):
         spi.readinto(result)
         spi.unlock()
         cs.value = True
-        #print(result)
+        # print(result)
     except Exception as e:
         print(e)
     finally:
@@ -125,7 +140,7 @@ def get_build_date():
     return (year, month, day)
 val = camera_data_write(0x00,0x55)
 val = camera_data_read(0x00,1)
-#print(int(val[0]))
+# print(int(val[0]))
 print("{:02x}".format(val[0]))
 time.sleep(0.5)
 camera_config_read(I2C_ADDR, 0x0A)
@@ -153,15 +168,17 @@ data = bytearray([0]*110)
 def take_a_picture():
     camera_data_write(0x04, 0x11)
     camera_data_write(0x04, 0x02)
-    time.sleep(2)
+    time.sleep(0.1)
     total = get_buffer_size()
     od = 0x00
     nd = 0x00
-    print("Free Memory: {}".format(gc.mem_free()))
+    # print("Free Memory: {}".format(gc.mem_free()))
     ending = 0
     encoded = b""
     count = 0
+    toggle_btn_unpushed = True
     for i in range(total):
+        toggle_btn_unpushed = toggle_btn.value
         nd = camera_data_read(0x3D)[0]
         data[count] = nd
         count +=1
@@ -170,13 +187,13 @@ def take_a_picture():
             newstr = base64.encodebytes(data[0:count])[:-1]
             count = 0
             encoded+=newstr
-            print("done!")
-            print("Buffer Captured: {}".format(i))
-            print("Buffer Size: {}".format(get_buffer_size()))
+            # print("done!")
+            # print("Buffer Captured: {}".format(i))
+            # print("Buffer Size: {}".format(get_buffer_size()))
             response = False
             while not response:
                 try:
-                    print("len of encoded is {}".format(len(encoded)))
+                    # print("len of encoded is {}".format(len(encoded)))
                     failure_count = 0
                     response = requests.post("http://608dev.net/sandbox/mostec_camera/sound?id=1", data=encoded.decode('ascii'))
                     print(response.text)
@@ -192,36 +209,32 @@ def take_a_picture():
             count=0
         od = nd
     i = 0
-    '''
-    while not response:
-        try:
-            failure_count = 0
-            response = requests.post(JSON_POST_URL, data=data)
-            print(response.text)
-        except AssertionError as error:
-            print("Request failed, retrying...\n", error)
-            failure_count += 1
-            if failure_count >= attempts:
-                raise AssertionError("Failed to resolve hostname, \please check your router's DNS configuration")
-    '''
-    time.sleep(1)
+    return toggle_btn_unpushed
 
-word_bank = ["","","","","","","","","","","","",]
+word_bank = ["Urgent","Fragile","Package","The","Available","Here","Come","Yes","No","Doorstep","Is","Family","Friend"]
 state = 0
 count = 0
+word_index = 0
+new_word = ""
+message = ""
 #---MAIN---
+#green button = single-click to send message; double-click to delete last word
+#yellow button = stage current word
+#blue button = cycle through word bank
 while True:
+    print(state)
     motion_detector = pir.value
+    #State = 0
     if state == 0:
       if motion_detector == 1:
           state = 1
-
+    #State = 1
     elif state == 1:
         buzzer.duty_cycle = ON
         time.sleep(2)
         buzzer.duty_cycle = OFF
         state = 1.5
-
+    #State = 1.5
     elif state == 1.5:
         if motion_detector == 1:
           #Twilio sending text
@@ -232,39 +245,75 @@ while True:
           state = 2
         elif motion_detector == 0:
           count += 1
-          time.sleep(0.1)
-          if count == 300:
+          if count == 60:
               count = 0
               state = 0
-
+    #State = 2
     elif state == 2:
-        take_a_picture()
-        if toggle_btn.value == 0:
+        if take_a_picture() == 0:
           state = 3
-
+        elif toggle_btn.value == 0:
+          state = 3
+    #State = 3
     elif state == 3:
         if toggle_btn.value == 1:
-          state = 4
-
+          #Set screen to message select
+            state = 4
+    #State = 4
     elif state == 4:
-        print("Hello") # Should print next word in word_bank
-        state = 2
-
+        if word_index>len(word_bank):
+          word_index=0
+        new_word = word_bank[word_index]
+        text = new_word
+        splash.remove(text_area)
+        text_area = label.Label(terminalio.FONT, text=text, color=0xFFFF00, x=10, y=10)
+        splash.append(text_area)
+        if stage_btn.value == 0:
+          state = 5
+        elif toggle_btn.value == 0:
+          word_index+=1
+          state = 2
+    #State = 5
     elif state == 5:
-        pass
-
+        if stage_btn.value == 1:
+          state = 6
+    #State = 6
     elif state == 6:
-        pass
-
+        message = message + " " + new_word
+        stage = label.Label(terminalio.FONT, text=message, color=0xFFFF00, x=10, y=32)
+        splash.append(stage)
+        state = 9
+    #State = 7
     elif state == 7:
-        pass
-
+        if send_btn.value == 1 and time.monotonic() - timer > 0.5:
+          state = 8
+        elif send_btn.value == 1 and time.monotonic() - timer < 0.5:
+          state = 10
+    #State = 8
     elif state == 8:
-        pass
-    
+        splash.remove(text_area)
+        splash.remove(stage)
+        text_area = label.Label(terminalio.FONT, text="Final Message: ", color=0xFFFF00, x=10, y=10)
+        stage = label.Label(terminalio.FONT, text=message, color=0xFFFF00, x=10, y=32)
+        splash.append(text_area)
+        splash.append(stage)
+        state = 2
+    #State = 9
     elif state == 9:
-        pass
-    
+        if send_btn.value == 0:
+          timer = time.monotonic()
+          state = 7
+        elif toggle_btn.value ==0:
+          word_index = 0
+          state = 2
+    #State = 10
     elif state == 10:
-        pass
+        message = message.rsplit(" ", 1)[0]
+        if not " " in message:
+            message = ""
+        splash.remove(stage)
+        stage = label.Label(terminalio.FONT, text=message + message, color=0xFFFF00, x=10, y=32)
+        splash.append(stage)
+        state = 9
+        
     time.sleep(0.5)
