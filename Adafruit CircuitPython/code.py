@@ -15,6 +15,7 @@ from adafruit_esp32spi import adafruit_esp32spi
 import adafruit_requests as requests
 from configuration import *
 from secrets import secrets
+import json
 
 # ---CONFIGURATION---
 # Buttons
@@ -40,7 +41,9 @@ display = adafruit_displayio_ssd1306.SSD1306(display_bus, width=128, height=64)
 splash = displayio.Group()
 text_area = label.Label(terminalio.FONT, text=" ", color=0xFFFF00, x=10, y=10)
 stage = label.Label(terminalio.FONT, text=" ", color=0xFFFF00, x=10, y=32)
+resident_text_area = label.Label(terminalio.FONT, text=" ", color=0xFFFF00, x=10, y=32)
 splash.append(text_area)
+splash.append(resident_text_area)
 display.show(splash)
 # time
 timer = time.monotonic()
@@ -209,6 +212,24 @@ def take_a_picture():
             count=0
         od = nd
     i = 0
+    # GETTING and POSTING the time that picture is taken
+    r = requests.get("http://608dev.net/sandbox/currenttime")
+    response = r.text
+    response = response[11:]
+    time_units = response.split(":")
+    time_of_day = ""
+    if int(time_units[0])-4 > 12:
+        time_of_day = "pm"
+    else:
+        time_of_day = "am"
+    if (int(time_units[0])-4)%12 == 0:
+        hours = str(12)
+    else:
+        hours = str((int(time_units[0])-4)%12)
+    minutes = str(int(time_units[1]))
+    seconds = str(float(time_units[2]))
+    picture_time = hours + ":" + minutes + ":" + seconds + " " + time_of_day
+    requests.post("http://608dev.net/sandbox/mostec/sound-doorbell?time=" + picture_time)
     return toggle_btn_unpushed
 
 word_bank = ["Urgent","Fragile","Package","The","Available","Here","Come","Yes","No","Doorstep","Is","Family","Friend"]
@@ -222,12 +243,27 @@ message = ""
 #yellow button = stage current word
 #blue button = cycle through word bank
 while True:
+#     requests.post("http://608dev.net/sandbox/mostec/sound-doorbell?message=" + " ")
     print(state)
     motion_detector = pir.value
+    time.sleep(0.5)
+    
+    #Gets resident message from website
+    r = requests.get("http://608dev.net/sandbox/mostec/sound-resident?message")
+    response = json.loads(r.text)
+    resident_message = response["message"]
+    old_message = ""
+    if old_message == resident_message:
+        pass
+    else:
+      splash.remove(resident_text_area)
+      resident_text_area = label.Label(terminalio.FONT, text=resident_message, color=0xFFFF00, x=10, y=50)
+      splash.append(resident_text_area)
+      old_message = resident_message
     #State = 0
     if state == 0:
-      if motion_detector == 1:
-          state = 1
+        if motion_detector == 1:
+            state = 1
     #State = 1
     elif state == 1:
         buzzer.duty_cycle = ON
@@ -293,8 +329,9 @@ while True:
     elif state == 8:
         splash.remove(text_area)
         splash.remove(stage)
+        requests.post("http://608dev.net/sandbox/mostec/sound-doorbell?message=" + message)
         text_area = label.Label(terminalio.FONT, text="Final Message: ", color=0xFFFF00, x=10, y=10)
-        stage = label.Label(terminalio.FONT, text=message, color=0xFFFF00, x=10, y=32)
+        stage = label.Label(terminalio.FONT, text= message, color=0xFFFF00, x=10, y=32)
         splash.append(text_area)
         splash.append(stage)
         state = 2
