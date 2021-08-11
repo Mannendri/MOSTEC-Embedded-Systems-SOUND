@@ -7,6 +7,8 @@ A repository for my group's final project in the MOSTEC 2021 Embedded Systems co
 
 Project Overview: https://tinyurl.com/mostec-sound
 
+Virtual Presentation: https://youtu.be/VYK9EMtUmYs
+
 Project Demo: https://youtu.be/RtAZsK2S7F4
 
 Website: https://mostec-embedded-systems-sound.pythode.repl.co/
