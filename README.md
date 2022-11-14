@@ -5,10 +5,8 @@ Smart Open-source Utility Networking Doorbell (SOUND) | By Mannendri Olivares, R
 
 A repository for my group's final project in the MOSTEC 2021 Embedded Systems course.
 
-Project Overview: https://tinyurl.com/mostec-sound
+Project Presentation: https://tinyurl.com/mostec-sound-pres
 
-Virtual Presentation: https://tinyurl.com/mostec-sound-pres
+Live Demo: https://tinyurl.com/SOUND-project-demo
 
-Project Demo: https://tinyurl.com/SOUND-project-demo
-
-Website: https://mostec-embedded-systems-sound.pythode.repl.co/
+Project Website: https://mostec-embedded-systems-sound.pythode.repl.co/
